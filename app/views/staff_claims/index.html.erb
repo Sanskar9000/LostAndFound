@@ -1,0 +1,61 @@
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <div>
+    <h4 class="fw-bold mb-0">Pending Claims</h4>
+    <div class="text-muted small">Faculty/Admin can approve or reject claim requests</div>
+  </div>
+</div>
+
+<div class="card card-soft">
+  <div class="card-body">
+    <div class="table-responsive">
+      <table class="table align-middle mb-0">
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th>Requested By</th>
+            <th>Requested On</th>
+            <th>Proof Note</th>
+            <th class="text-end">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @claims.each do |c| %>
+            <tr>
+              <td class="fw-semibold"><%= c.item&.title %></td>
+              <td class="text-muted"><%= c.user&.email %></td>
+              <td class="text-muted"><%= c.created_at.strftime("%d %b %Y, %I:%M %p") %></td>
+              <td class="text-muted"><%= truncate(c.proof_note.to_s, length: 50) %></td>
+              <td class="text-end">
+                <div class="d-inline-flex align-items-center gap-1">
+                  <%= button_to "View",
+                        staff_claim_path(c),
+                        method: :get,
+                        class: "btn btn-sm btn-dark",
+                        form_class: "d-inline" %>
+
+                  <%= button_to "Approve",
+                        approve_staff_claim_path(c),
+                        method: :put,
+                        class: "btn btn-sm btn-success",
+                        form_class: "d-inline" %>
+
+                  <%= button_to "Reject",
+                        reject_staff_claim_path(c),
+                        method: :put,
+                        class: "btn btn-sm btn-outline-danger",
+                        form_class: "d-inline" %>
+                </div>
+              </td>
+            </tr>
+          <% end %>
+
+          <% if @claims.blank? %>
+            <tr>
+              <td colspan="5" class="text-center text-muted py-5">No pending claims.</td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

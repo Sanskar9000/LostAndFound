@@ -1,0 +1,147 @@
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <div>
+    <h4 class="fw-bold mb-0"><%= @item.title %></h4>
+    <div class="text-muted small">
+      Posted by <%= @item.user&.email %> • <%= @item.created_at.strftime("%d %b %Y") %>
+    </div>
+  </div>
+
+  <% if @item.user == current_user || current_user.admin? %>
+    <%= link_to "Edit", edit_item_path(@item), class: "btn btn-sm btn-outline-dark" %>
+  <% end %>
+</div>
+
+<div class="row g-3">
+  <div class="col-lg-8">
+    <div class="card card-soft">
+      <div class="card-body p-4">
+        <div class="d-flex gap-2 mb-3">
+          <% if @item.item_type == "lost" %>
+            <span class="badge badge-soft-danger px-3 py-2">Lost</span>
+          <% else %>
+            <span class="badge badge-soft-success px-3 py-2">Found</span>
+          <% end %>
+          <span class="badge badge-soft-primary px-3 py-2">
+            Status: <%= (@item.status.presence || "open").capitalize %>
+          </span>
+        </div>
+
+        <div class="row g-3">
+          <div class="col-md-6">
+            <div class="text-muted small">Category</div>
+            <div class="fw-semibold"><%= @item.category %></div>
+          </div>
+          <div class="col-md-6">
+            <div class="text-muted small">Location</div>
+            <div class="fw-semibold"><%= @item.location %></div>
+          </div>
+          <div class="col-md-6">
+            <div class="text-muted small">Date</div>
+            <div class="fw-semibold"><%= @item.found_on %></div>
+          </div>
+          <div class="col-md-6">
+            <div class="text-muted small">posted by</div>
+            <div class="fw-semibold"><%= @item.user&.email %></div>
+          </div>
+        </div>
+
+        <hr>
+
+        <div class="text-muted small mb-1">Description</div>
+        <div><%= simple_format(@item.description) %></div>
+
+        <% if @item.images.attached? %>
+          <hr>
+          <div class="text-muted small mb-2">Images</div>
+          <div class="d-flex flex-wrap gap-2">
+            <% @item.images.each do |img| %>
+              <%= image_tag img, class: "rounded-3 border", style: "width: 110px; height: 110px; object-fit: cover;" %>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-4">
+    <% approved_claim = @item.claims.find { |c| c.status == "approved" } %>
+    <% pending_claim  = @item.claims.find { |c| c.status == "pending" } %>
+
+    <% if approved_claim.present? %>
+      <div class="card card-soft">
+        <div class="card-body p-4">
+          <h6 class="fw-bold mb-1">Item Claimed</h6>
+          <div class="small text-muted mb-3">
+            This item has already been claimed and approved.
+          </div>
+
+          <div class="border rounded-3 p-3 bg-light">
+            <div class="d-flex justify-content-between">
+              <div class="text-muted small">Claimed by</div>
+              <div class="fw-semibold"><%= approved_claim.user&.email %></div>
+            </div>
+
+            <div class="d-flex justify-content-between mt-2">
+              <div class="text-muted small">Claim requested</div>
+              <div class="fw-semibold"><%= approved_claim.created_at.strftime("%d %b %Y, %I:%M %p") %></div>
+            </div>
+
+            <div class="d-flex justify-content-between mt-2">
+              <div class="text-muted small">Approved on</div>
+              <div class="fw-semibold">
+                <%= approved_claim.approved_at.present? ? approved_claim.approved_at.strftime("%d %b %Y, %I:%M %p") : "-" %>
+              </div>
+            </div>
+          </div>
+
+          <hr>
+          <span class="badge badge-soft-success px-3 py-2">Approved</span>
+        </div>
+      </div>
+
+    <% elsif pending_claim.present? %>
+      <div class="card card-soft">
+        <div class="card-body p-4">
+          <h6 class="fw-bold mb-1">Claim Pending</h6>
+          <div class="small text-muted mb-3">
+            A claim request has been submitted and is waiting for approval.
+          </div>
+
+          <div class="border rounded-3 p-3 bg-light">
+            <div class="d-flex justify-content-between">
+              <div class="text-muted small">Requested by</div>
+              <div class="fw-semibold"><%= pending_claim.user&.email %></div>
+            </div>
+
+            <div class="d-flex justify-content-between mt-2">
+              <div class="text-muted small">Requested on</div>
+              <div class="fw-semibold"><%= pending_claim.created_at.strftime("%d %b %Y, %I:%M %p") %></div>
+            </div>
+          </div>
+
+          <hr>
+          <span class="badge badge-soft-primary px-3 py-2">Pending Approval</span>
+
+          <% if current_user.admin? %>
+            <div class="small text-muted mt-2">
+              Admin can approve/reject this claim from the Admin Panel.
+            </div>
+            <a href="/admin/claims" class="btn btn-outline-dark w-100 mt-2">Open Admin Claims</a>
+          <% end %>
+        </div>
+      </div>
+
+    <% else %>
+      <div class="card card-soft">
+        <div class="card-body p-4">
+          <h6 class="fw-bold mb-1">Claim This Item</h6>
+          <div class="small text-muted mb-3">
+            If you believe this item belongs to you, submit a claim request with proof details.
+          </div>
+
+          <%= link_to "Request Claim", new_item_claim_path(@item), class: "btn btn-dark w-100" %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>

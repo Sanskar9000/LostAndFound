@@ -1,0 +1,57 @@
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <div>
+    <h4 class="fw-bold mb-0">Claims</h4>
+    <div class="text-muted small">Track your submitted claims</div>
+  </div>
+</div>
+
+<div class="card card-soft">
+  <div class="card-body">
+    <div class="table-responsive">
+      <table class="table align-middle mb-0">
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th>Status</th>
+            <th>Claim Code</th>
+            <th>Submitted</th>
+            <th>Claimed by</th>
+            <th>Status</th>
+            <th class="text-end">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @claims.each do |c| %>
+            <tr>
+              <td class="fw-semibold"><%= c.item&.title %></td>
+              <td>
+                <% if c.status == "approved" %>
+                  <span class="badge badge-soft-success">Approved</span>
+                <% elsif c.status == "rejected" %>
+                  <span class="badge badge-soft-danger">Rejected</span>
+                <% else %>
+                  <span class="badge badge-soft-primary">Pending</span>
+                <% end %>
+              </td>
+              <td class="text-muted"><%= c.claim_code.presence || "-" %></td>
+              <td class="text-muted"><%= c.created_at.strftime("%d %b %Y") %></td>
+              <td class="text-muted"><%= c.user.email %></td>
+              <td class="text-muted"><%= c.status %></td>
+              <td class="text-end">
+                <%= link_to "View", claim_path(c), class: "btn btn-sm btn-dark" %>
+              </td>
+            </tr>
+          <% end %>
+
+          <% if @claims.blank? %>
+            <tr>
+              <td colspan="5" class="text-center text-muted py-5">
+                No claims submitted yet.
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

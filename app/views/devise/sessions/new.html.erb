@@ -1,0 +1,36 @@
+<div class="container py-5" style="max-width: 460px;">
+  <div class="card shadow-sm border-0 rounded-4">
+    <div class="card-body p-4 p-md-5">
+      <h3 class="fw-bold mb-1">Welcome back</h3>
+      <div class="text-muted mb-4">Login to Campus Lost & Found</div>
+
+      <%= form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
+        <div class="mb-3">
+          <%= f.label :email, class: "form-label fw-semibold" %>
+          <%= f.email_field :email, autofocus: true, autocomplete: "email", class: "form-control form-control-lg rounded-3" %>
+        </div>
+
+        <div class="mb-3">
+          <%= f.label :password, class: "form-label fw-semibold" %>
+          <%= f.password_field :password, autocomplete: "current-password", class: "form-control form-control-lg rounded-3" %>
+        </div>
+
+        <% if devise_mapping.rememberable? %>
+          <div class="form-check mb-3">
+            <%= f.check_box :remember_me, class: "form-check-input" %>
+            <%= f.label :remember_me, class: "form-check-label" %>
+          </div>
+        <% end %>
+
+        <div class="d-grid gap-2">
+          <%= f.submit "Login", class: "btn btn-dark btn-lg rounded-3" %>
+          <%= link_to "Create a new account", new_registration_path(resource_name), class: "btn btn-outline-secondary btn-lg rounded-3" %>
+        </div>
+      <% end %>
+
+      <div class="mt-4 text-center">
+        <%= link_to "Forgot your password?", new_password_path(resource_name), class: "small text-muted" %>
+      </div>
+    </div>
+  </div>
+</div>

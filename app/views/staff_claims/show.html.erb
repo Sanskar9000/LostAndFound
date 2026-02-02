@@ -1,0 +1,118 @@
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <div>
+    <h4 class="fw-bold mb-0">Review Claim</h4>
+    <div class="text-muted small">
+      Claim for: <span class="fw-semibold"><%= @claim.item&.title %></span>
+    </div>
+  </div>
+  <%= link_to "Back", staff_claims_path, class: "btn btn-sm btn-outline-secondary" %>
+</div>
+
+<div class="row g-3">
+  <!-- Item card -->
+  <div class="col-lg-7">
+    <div class="card card-soft">
+      <div class="card-body p-4">
+        <div class="d-flex align-items-center justify-content-between">
+          <div>
+            <div class="text-muted small">Item</div>
+            <div class="h5 fw-bold mb-0"><%= @claim.item&.title %></div>
+          </div>
+          <% if @claim.item&.item_type == "lost" %>
+            <span class="badge badge-soft-danger px-3 py-2">Lost</span>
+          <% else %>
+            <span class="badge badge-soft-success px-3 py-2">Found</span>
+          <% end %>
+        </div>
+
+        <hr>
+
+        <div class="row g-3">
+          <div class="col-md-6">
+            <div class="text-muted small">Category</div>
+            <div class="fw-semibold"><%= @claim.item&.category %></div>
+          </div>
+          <div class="col-md-6">
+            <div class="text-muted small">Location</div>
+            <div class="fw-semibold"><%= @claim.item&.location %></div>
+          </div>
+          <div class="col-md-6">
+            <div class="text-muted small">Date</div>
+            <div class="fw-semibold"><%= @claim.item&.found_on %></div>
+          </div>
+          <div class="col-md-6">
+            <div class="text-muted small">Posted By</div>
+            <div class="fw-semibold"><%= @claim.item&.user&.email %></div>
+          </div>
+        </div>
+
+        <hr>
+
+        <div class="text-muted small mb-1">Description</div>
+        <div><%= simple_format(@claim.item&.description.to_s) %></div>
+
+        <% if @claim.item&.images&.attached? %>
+          <hr>
+          <div class="text-muted small mb-2">Item Images</div>
+          <div class="d-flex flex-wrap gap-2">
+            <% @claim.item.images.each do |img| %>
+              <%= image_tag img, class: "rounded-3 border", style: "width: 110px; height: 110px; object-fit: cover;" %>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Claim card -->
+  <div class="col-lg-5">
+    <div class="card card-soft">
+      <div class="card-body p-4">
+        <div class="d-flex justify-content-between align-items-start">
+          <div>
+            <div class="text-muted small">Requested By</div>
+            <div class="fw-bold"><%= @claim.user&.email %></div>
+            <div class="small text-muted mt-1">
+              Requested on <%= @claim.created_at.strftime("%d %b %Y, %I:%M %p") %>
+            </div>
+          </div>
+          <span class="badge badge-soft-primary px-3 py-2">Pending</span>
+        </div>
+
+        <hr>
+
+        <div class="text-muted small mb-1">Proof Note</div>
+        <div><%= simple_format(@claim.proof_note.to_s) %></div>
+
+        <% if @claim.proof_files.attached? %>
+          <hr>
+          <div class="text-muted small mb-2">Proof Files</div>
+          <div class="d-flex flex-wrap gap-2">
+            <% @claim.proof_files.each do |file| %>
+              <% if file.content_type&.start_with?("image/") %>
+                <%= image_tag file, class: "rounded-3 border", style: "width: 110px; height: 110px; object-fit: cover;" %>
+              <% else %>
+                <%= link_to file.filename.to_s, rails_blob_path(file, disposition: "attachment"),
+                      class: "btn btn-sm btn-outline-dark" %>
+              <% end %>
+            <% end %>
+          </div>
+        <% end %>
+
+        <hr>
+
+        <div class="d-grid gap-2">
+          <%= button_to "Approve Claim", approve_staff_claim_path(@claim),
+                method: :put, class: "btn btn-dark btn-lg rounded-3" %>
+
+          <%= button_to "Reject Claim", reject_staff_claim_path(@claim),
+                method: :put, class: "btn btn-outline-danger btn-lg rounded-3" %>
+        </div>
+
+        <div class="small text-muted mt-3">
+          Approving will mark the item as <span class="fw-semibold">returned</span> and store approval time.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

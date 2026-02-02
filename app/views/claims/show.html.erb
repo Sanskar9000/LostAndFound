@@ -1,0 +1,50 @@
+<div class="mb-3">
+  <h4 class="fw-bold mb-0">Claim Details</h4>
+  <div class="text-muted small">Item: <%= @claim.item&.title %></div>
+</div>
+
+<div class="row g-3">
+  <div class="col-lg-8">
+    <div class="card card-soft">
+      <div class="card-body p-4">
+        <div class="text-muted small mb-1">Proof Note</div>
+        <div><%= simple_format(@claim.proof_note) %></div>
+
+        <hr>
+
+        <div class="d-flex flex-wrap gap-2">
+          <span class="badge badge-soft-primary px-3 py-2">Status: <%= @claim.status.to_s.capitalize %></span>
+          <span class="badge badge-soft-success px-3 py-2">Claim Code: <%= @claim.claim_code.presence || "-" %></span>
+        </div>
+
+        <% if @claim.proof_files.attached? %>
+          <hr>
+          <div class="text-muted small mb-2">Proof Files</div>
+          <div class="d-flex flex-wrap gap-2">
+            <% @claim.proof_files.each do |file| %>
+              <% if file.content_type&.start_with?("image/") %>
+                <%= image_tag file, class: "rounded-3 border", style: "width: 110px; height: 110px; object-fit: cover;" %>
+              <% else %>
+                <%= link_to file.filename.to_s, rails_blob_path(file, disposition: "attachment"),
+                  class: "btn btn-sm btn-outline-dark" %>
+              <% end %>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-4">
+    <div class="card card-soft">
+      <div class="card-body p-4">
+        <h6 class="fw-bold mb-1">Process</h6>
+        <div class="small text-muted">
+          Admin/finder reviews your claim request. If approved, you can contact the faculty to collect the item.
+        </div>
+        <hr>
+        <%= link_to "Browse Items", items_path, class: "btn btn-outline-dark w-100" %>
+      </div>
+    </div>
+  </div>
+</div>

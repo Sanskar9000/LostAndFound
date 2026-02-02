@@ -1,0 +1,28 @@
+<div class="mb-3">
+  <h4 class="fw-bold mb-0">Claim Request</h4>
+  <div class="text-muted small">Item: <%= @item.title %></div>
+</div>
+
+<div class="card card-soft">
+  <div class="card-body p-4">
+    <%= form_with model: [@item, @claim], local: true do |f| %>
+      <div class="mb-3">
+        <%= f.label :proof_note, "Proof Note", class: "form-label fw-semibold" %>
+        <%= f.text_area :proof_note, class: "form-control", rows: 5,
+          placeholder: "Describe proof: color, unique marks, ID number, where you lost it, etc." %>
+      </div>
+
+      <div class="mb-3">
+        <%= f.label :proof_files, "Proof Files (optional)", class: "form-label fw-semibold" %>
+        <%= f.file_field :proof_files, multiple: true, class: "form-control",
+          accept: "image/*,application/pdf" %>
+        <div class="form-text">Upload image or PDF proof to support your claim.</div>
+      </div>
+
+      <div class="d-flex gap-2">
+        <%= f.submit "Submit Claim", class: "btn btn-dark" %>
+        <%= link_to "Cancel", item_path(@item), class: "btn btn-outline-secondary" %>
+      </div>
+    <% end %>
+  </div>
+</div>

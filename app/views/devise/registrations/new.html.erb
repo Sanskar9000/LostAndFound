@@ -1,0 +1,58 @@
+<div class="container py-5" style="max-width: 560px;">
+  <div class="card shadow-sm border-0 rounded-4">
+    <div class="card-body p-4 p-md-5">
+      <h3 class="fw-bold mb-1">Create account</h3>
+      <div class="text-muted mb-4">Student sign up is default. Faculty must choose role.</div>
+
+      <%= form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
+        <%= render "devise/shared/error_messages", resource: resource %>
+
+        <div class="row g-3">
+          <div class="col-12">
+            <%= f.label :email, class: "form-label fw-semibold" %>
+            <%= f.email_field :email, autofocus: true, autocomplete: "email",
+              class: "form-control form-control-lg rounded-3" %>
+          </div>
+
+          <div class="col-12">
+            <%= f.label :department, "Department", class: "form-label fw-semibold" %>
+            <%= f.select :department,
+              ["Computer Science", "IT", "Mechanical", "Civil", "Electrical", "Electronics", "Other"],
+              { prompt: "Select department" },
+              class: "form-select form-select-lg rounded-3",
+              required: true %>
+          </div>
+
+          <div class="col-12">
+            <%= f.label :role, "I am signing up as", class: "form-label fw-semibold" %>
+            <%= f.select :role,
+              [["Student (default)", "student"], ["Faculty", "faculty"]],
+              {},
+              class: "form-select form-select-lg rounded-3" %>
+
+            <div class="form-text">
+              Students can sign up directly. Faculty should select Faculty.
+            </div>
+          </div>
+
+          <div class="col-12">
+            <%= f.label :password, class: "form-label fw-semibold" %>
+            <%= f.password_field :password, autocomplete: "new-password",
+              class: "form-control form-control-lg rounded-3" %>
+          </div>
+
+          <div class="col-12">
+            <%= f.label :password_confirmation, class: "form-label fw-semibold" %>
+            <%= f.password_field :password_confirmation, autocomplete: "new-password",
+              class: "form-control form-control-lg rounded-3" %>
+          </div>
+        </div>
+
+        <div class="d-grid gap-2 mt-4">
+          <%= f.submit "Create Account", class: "btn btn-dark btn-lg rounded-3" %>
+          <%= link_to "Already have an account? Login", new_session_path(resource_name), class: "btn btn-outline-secondary btn-lg rounded-3" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

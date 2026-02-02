@@ -1,0 +1,57 @@
+<div class="card card-soft">
+  <div class="card-body p-4">
+    <%= form_with model: item, local: true do |f| %>
+      <% if item.errors.any? %>
+        <div class="alert alert-danger">
+          <div class="fw-bold mb-2">Please fix the following:</div>
+          <ul class="mb-0">
+            <% item.errors.full_messages.each do |m| %>
+              <li><%= m %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <%= f.hidden_field :item_type %>
+
+      <div class="row g-3">
+        <div class="col-md-6">
+          <%= f.label :title, "Title", class: "form-label fw-semibold" %>
+          <%= f.text_field :title, class: "form-control", placeholder: "e.g., Black Wallet / iPhone 13 / Student ID" %>
+        </div>
+
+        <div class="col-md-6">
+          <%= f.label :category, "Category", class: "form-label fw-semibold" %>
+          <%= f.text_field :category, class: "form-control", placeholder: "Wallet, Phone, Bag, ID Card..." %>
+        </div>
+
+        <div class="col-md-6">
+          <%= f.label :location, "Location", class: "form-label fw-semibold" %>
+          <%= f.text_field :location, class: "form-control", placeholder: "Library, Parking, Canteen..." %>
+        </div>
+
+        <div class="col-md-6">
+          <%= f.label :found_on, "Date", class: "form-label fw-semibold" %>
+          <%= f.date_field :found_on, class: "form-control" %>
+        </div>
+
+        <div class="col-12">
+          <%= f.label :description, "Description", class: "form-label fw-semibold" %>
+          <%= f.text_area :description, class: "form-control", rows: 4,
+            placeholder: "Color, brand, marks, unique identifiers..." %>
+        </div>
+
+        <div class="col-12">
+          <%= f.label :images, "Item Images (optional)", class: "form-label fw-semibold" %>
+          <%= f.file_field :images, multiple: true, class: "form-control", accept: "image/*" %>
+          <div class="form-text">Upload 1–3 clear photos of the item.</div>
+        </div>
+      </div>
+
+      <div class="d-flex gap-2 mt-4">
+        <%= f.submit "Save", class: "btn btn-dark" %>
+        <%= link_to "Cancel", root_path, class: "btn btn-outline-secondary" %>
+      </div>
+    <% end %>
+  </div>
+</div>
