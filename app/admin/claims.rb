@@ -14,6 +14,7 @@ ActiveAdmin.register Claim do
     end
     column :status
     column :claim_code
+    column :pickup_verified_at
     column :created_at
     actions defaults: true do |c|
       if c.status == "pending"
@@ -32,31 +33,19 @@ ActiveAdmin.register Claim do
       row :user
       row :status
       row :claim_code
+      row :pickup_verified_at
       row :proof_note
       row :created_at
     end
   end
 
   member_action :approve, method: :put do
-    resource.update!(status: "approved")
-
-    # Optional: mark item as returned when approved (nice for report)
-    resource.item.update!(status: "returned") if resource.item.present?
-
-    redirect_to resource_path, notice: "Claim approved."
-  end
-
-  member_action :approve, method: :put do
-    resource.update!(status: "approved", approved_at: Time.current)
-
-    # Optional: mark item as returned when approved
-    resource.item.update!(status: "returned") if resource.item.present?
-
+    resource.approve_for_pickup!
     redirect_to resource_path, notice: "Claim approved."
   end
 
   member_action :reject, method: :put do
-    resource.update!(status: "rejected")
+    resource.reject!(reason: "Rejected by administrator.")
     redirect_to resource_path, notice: "Claim rejected."
   end
 end

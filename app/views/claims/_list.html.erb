@@ -1,0 +1,40 @@
+<div class="table-responsive">
+  <table class="table align-middle mb-0">
+    <thead>
+      <tr>
+        <th>Preview</th>
+        <th>Item</th>
+        <th>Status</th>
+        <th>Claim Code</th>
+        <th>Submitted</th>
+        <th>Claimed by</th>
+        <th class="text-end">Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% claims.each do |claim| %>
+        <tr>
+          <td>
+            <%= image_tag claim_preview_source(claim), class: "thumb-sm border" %>
+          </td>
+          <td class="fw-semibold"><%= claim.item&.title %></td>
+          <td>
+            <% if claim.status == "approved" %>
+              <span class="badge badge-soft-success">Approved</span>
+            <% elsif claim.status == "rejected" %>
+              <span class="badge badge-soft-danger">Rejected</span>
+            <% else %>
+              <span class="badge badge-soft-primary">Pending</span>
+            <% end %>
+          </td>
+          <td class="text-muted"><%= claim.claim_code.presence || "-" %></td>
+          <td class="text-muted"><%= claim.created_at.strftime("%d %b %Y") %></td>
+          <td class="text-muted"><%= claim.user&.email %></td>
+          <td class="text-end">
+            <%= link_to "View", claim_path(claim), class: "btn btn-sm btn-dark" %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

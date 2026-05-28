@@ -1,0 +1,12 @@
+Hello <%= @claim.user.email %>,
+
+Your claim for <%= @item&.title %> has been reviewed and was not approved.
+
+<% if @claim.rejection_reason.present? %>
+Reason for rejection:
+<%= @claim.rejection_reason %>
+
+<% end %>
+
+You can review the claim here:
+<%= claim_url(@claim) %>

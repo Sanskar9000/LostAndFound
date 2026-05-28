@@ -1,0 +1,8 @@
+<div class="btn-group view-toggle" role="group" aria-label="View switcher">
+  <%= link_to "Grid",
+    items_path(request.query_parameters.merge(view: "grid")),
+    class: "btn btn-outline-dark #{'active' if index_view_mode == 'grid'}" %>
+  <%= link_to "List",
+    items_path(request.query_parameters.merge(view: "list")),
+    class: "btn btn-outline-dark #{'active' if index_view_mode == 'list'}" %>
+</div>

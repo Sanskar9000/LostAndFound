@@ -1,0 +1,177 @@
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <div>
+    <h4 class="fw-bold mb-0">Search Hub</h4>
+    <div class="text-muted small">Search across items, claims, and people from one place.</div>
+  </div>
+</div>
+
+<div class="card card-soft mb-4">
+  <div class="card-body p-4">
+    <%= form_with url: search_path, method: :get, local: true, class: "row g-3 align-items-end" do %>
+      <div class="col-lg-8">
+        <label for="q" class="form-label fw-semibold">Search Everything</label>
+        <%= text_field_tag :q, @query, class: "form-control form-control-lg", placeholder: "Search by item name, claim code, user email, department, campus..." %>
+      </div>
+      <div class="col-lg-auto">
+        <%= submit_tag "Search", class: "btn btn-dark btn-lg" %>
+      </div>
+      <% if @query.present? %>
+        <div class="col-lg-auto">
+          <%= link_to "Clear", search_path, class: "btn btn-outline-secondary btn-lg" %>
+        </div>
+      <% end %>
+    <% end %>
+  </div>
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-md-6 col-xl-3">
+    <div class="card card-soft stat-card p-4 h-100">
+      <div class="text-muted small">Items</div>
+      <div class="display-6 fw-bold"><%= @kpis[:total_items] %></div>
+      <div class="small text-muted mt-2">Open: <span class="fw-semibold text-muted"><%= @kpis[:open_items] %></span> • Returned: <span class="fw-semibold text-muted"><%= @kpis[:returned_items] %></span></div>
+    </div>
+  </div>
+  <div class="col-md-6 col-xl-3">
+    <div class="card card-soft stat-card p-4 h-100">
+      <div class="text-muted small">Claims</div>
+      <div class="display-6 fw-bold"><%= @kpis[:total_claims] %></div>
+      <div class="small text-muted mt-2">Pending: <span class="fw-semibold text-muted"><%= @kpis[:pending_claims] %></span> • Approved: <span class="fw-semibold text-muted"><%= @kpis[:approved_claims] %></span></div>
+    </div>
+  </div>
+  <div class="col-md-6 col-xl-3">
+    <div class="card card-soft stat-card p-4 h-100">
+      <div class="text-muted small">Users</div>
+      <div class="display-6 fw-bold"><%= @kpis[:total_users] %></div>
+      <div class="small text-muted mt-2">Faculty: <span class="fw-semibold text-muted"><%= @kpis[:faculty_users] %></span></div>
+    </div>
+  </div>
+  <div class="col-md-6 col-xl-3">
+    <div class="card card-soft stat-card p-4 h-100">
+      <div class="text-muted small">Search Scope</div>
+      <div class="h4 fw-bold mb-2"><%= @query.present? ? "Filtered" : "Overview" %></div>
+      <div class="small text-muted">Use this page to search details, check KPIs, and find contact emails quickly.</div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-3">
+  <div class="col-xl-4">
+    <div class="card card-soft h-100">
+      <div class="card-body p-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <div>
+            <h5 class="fw-bold mb-0">Items</h5>
+            <div class="small text-muted"><%= @items.size %> result<%= "s" unless @items.size == 1 %></div>
+          </div>
+          <%= link_to "Open Items", items_path, class: "btn btn-sm btn-outline-dark" %>
+        </div>
+
+        <% if @items.present? %>
+          <div class="d-grid gap-3">
+            <% @items.each do |item| %>
+              <div class="border rounded-4 p-3 bg-white bg-opacity-75">
+                <div class="d-flex gap-3">
+                  <%= image_tag item_preview_source(item), class: "thumb-sm border" %>
+                  <div class="flex-grow-1">
+                    <div class="d-flex flex-wrap gap-2 mb-2">
+                      <span class="badge <%= item.item_type == 'lost' ? 'badge-soft-danger' : 'badge-soft-success' %>"><%= item.item_type.capitalize %></span>
+                      <span class="badge badge-soft-primary"><%= item_status_badge(item).capitalize %></span>
+                    </div>
+                    <div class="fw-semibold"><%= item.title %></div>
+                    <div class="small text-muted"><%= item.category %> • <%= item.location %></div>
+                    <div class="small text-muted"><%= item.user&.email %> • <%= item.campus&.name %></div>
+                    <div class="mt-2">
+                      <%= link_to "View Item", item_path(item), class: "btn btn-sm btn-dark" %>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            <% end %>
+          </div>
+        <% else %>
+          <div class="text-muted">No item results.</div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-xl-4">
+    <div class="card card-soft h-100">
+      <div class="card-body p-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <div>
+            <h5 class="fw-bold mb-0">Claims</h5>
+            <div class="small text-muted"><%= @claims.size %> result<%= "s" unless @claims.size == 1 %></div>
+          </div>
+          <%= link_to "Open Claims", claims_path, class: "btn btn-sm btn-outline-dark" %>
+        </div>
+
+        <% if @claims.present? %>
+          <div class="d-grid gap-3">
+            <% @claims.each do |claim| %>
+              <div class="border rounded-4 p-3 bg-white bg-opacity-75">
+                <div class="d-flex gap-3">
+                  <%= image_tag claim_preview_source(claim), class: "thumb-sm border" %>
+                  <div class="flex-grow-1">
+                    <div class="d-flex flex-wrap gap-2 mb-2">
+                      <span class="badge badge-soft-primary"><%= claim.status.to_s.capitalize %></span>
+                    </div>
+                    <div class="fw-semibold"><%= claim.item&.title %></div>
+                    <div class="small text-muted">Claim code: <%= claim.claim_code.presence || "-" %></div>
+                    <div class="small text-muted">Claimed by: <%= claim.user&.email %></div>
+                    <div class="mt-2">
+                      <% if current_user.admin? || current_user.faculty? || claim.user == current_user %>
+                        <%= link_to "View Claim", claim_path(claim), class: "btn btn-sm btn-dark" %>
+                      <% else %>
+                        <%= link_to "View Item", item_path(claim.item), class: "btn btn-sm btn-dark" %>
+                      <% end %>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            <% end %>
+          </div>
+        <% else %>
+          <div class="text-muted">No claim results.</div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-xl-4">
+    <div class="card card-soft h-100">
+      <div class="card-body p-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <div>
+            <h5 class="fw-bold mb-0">People</h5>
+            <div class="small text-muted"><%= @users.size %> result<%= "s" unless @users.size == 1 %></div>
+          </div>
+          <%= link_to "My Profile", profile_path, class: "btn btn-sm btn-outline-dark" %>
+        </div>
+
+        <% if @users.present? %>
+          <div class="d-grid gap-3">
+            <% @users.each do |user| %>
+              <div class="border rounded-4 p-3 bg-white bg-opacity-75">
+                <div class="d-flex gap-3">
+                  <%= image_tag profile_image_source(user), class: "avatar-md border" %>
+                  <div class="flex-grow-1">
+                    <div class="fw-semibold"><%= user.email %></div>
+                    <div class="small text-muted"><%= user.role.capitalize %> • <%= user.department %></div>
+                    <div class="small text-muted"><%= user.campus&.name %></div>
+                    <div class="small text-muted mt-2">
+                      <a href="mailto:<%= user.email %>" class="text-decoration-none">Contact</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            <% end %>
+          </div>
+        <% else %>
+          <div class="text-muted">No people results.</div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

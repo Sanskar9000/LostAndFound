@@ -1,0 +1,13 @@
+Someone may have found your lost item.
+
+Lost item: <%= @lost_item.title %>
+Found item posted by: <%= @reporter.email %>
+Category: <%= @found_item.category %>
+Location: <%= @found_item.location %>
+Date: <%= @found_item.found_on %>
+
+If this looks like your item, submit a claim here:
+<%= new_item_claim_url(@found_item) %>
+
+Review the found item:
+<%= item_url(@found_item) %>

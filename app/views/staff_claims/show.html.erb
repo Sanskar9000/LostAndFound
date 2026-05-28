@@ -56,7 +56,7 @@
           <div class="text-muted small mb-2">Item Images</div>
           <div class="d-flex flex-wrap gap-2">
             <% @claim.item.images.each do |img| %>
-              <%= image_tag img, class: "rounded-3 border", style: "width: 110px; height: 110px; object-fit: cover;" %>
+              <%= image_tag img, class: "thumb-md border" %>
             <% end %>
           </div>
         <% end %>
@@ -76,7 +76,7 @@
               Requested on <%= @claim.created_at.strftime("%d %b %Y, %I:%M %p") %>
             </div>
           </div>
-          <span class="badge badge-soft-primary px-3 py-2">Pending</span>
+          <span class="badge badge-soft-primary px-3 py-2"><%= @claim.status.to_s.capitalize %></span>
         </div>
 
         <hr>
@@ -90,7 +90,7 @@
           <div class="d-flex flex-wrap gap-2">
             <% @claim.proof_files.each do |file| %>
               <% if file.content_type&.start_with?("image/") %>
-                <%= image_tag file, class: "rounded-3 border", style: "width: 110px; height: 110px; object-fit: cover;" %>
+                <%= image_tag file, class: "thumb-md border" %>
               <% else %>
                 <%= link_to file.filename.to_s, rails_blob_path(file, disposition: "attachment"),
                       class: "btn btn-sm btn-outline-dark" %>
@@ -101,17 +101,52 @@
 
         <hr>
 
-        <div class="d-grid gap-2">
-          <%= button_to "Approve Claim", approve_staff_claim_path(@claim),
-                method: :put, class: "btn btn-dark btn-lg rounded-3" %>
+        <% if @claim.status == "pending" %>
+          <div class="d-grid gap-2 mb-3">
+            <%= button_to "Approve Claim", approve_staff_claim_path(@claim),
+                  method: :put, class: "btn btn-dark btn-lg rounded-3" %>
+          </div>
 
-          <%= button_to "Reject Claim", reject_staff_claim_path(@claim),
-                method: :put, class: "btn btn-outline-danger btn-lg rounded-3" %>
-        </div>
+          <%= form_with url: reject_staff_claim_path(@claim), method: :put, local: true do %>
+            <div class="mb-3">
+              <label for="rejection_reason" class="form-label fw-semibold">Reason For Rejection</label>
+              <%= text_area_tag :rejection_reason, nil, rows: 4, class: "form-control", placeholder: "Explain why this claim is being rejected..." %>
+            </div>
+            <div class="d-grid">
+              <%= submit_tag "Reject Claim", class: "btn btn-outline-danger btn-lg rounded-3" %>
+            </div>
+          <% end %>
 
-        <div class="small text-muted mt-3">
-          Approving will mark the item as <span class="fw-semibold">returned</span> and store approval time.
-        </div>
+          <div class="small text-muted mt-3">
+            The claimant will be notified of the rejection reason.
+          </div>
+          <div class="small text-muted mt-2">
+            Approving generates a secure pickup token. The item will only be marked as returned after pickup verification.
+          </div>
+        <% elsif @claim.status == "approved" && !@claim.pickup_verified? %>
+          <hr>
+          <%= form_with url: verify_pickup_staff_claim_path(@claim), method: :patch, local: true do %>
+            <div class="mb-3">
+              <label for="pickup_value" class="form-label fw-semibold">Enter Claimant Token Or Scanned QR URL</label>
+              <%= text_field_tag :pickup_value, nil, class: "form-control", placeholder: "Enter the token shown by the claimant or paste the scanned QR link" %>
+            </div>
+            <div class="d-grid">
+              <%= submit_tag "Verify Pickup", class: "btn btn-dark btn-lg rounded-3" %>
+            </div>
+          <% end %>
+
+          <div class="small text-muted mt-3">
+            Do not rely on any token shown in the system. Only verify the value presented by the claimant. This token can only be used once.
+          </div>
+        <% elsif @claim.pickup_verified? %>
+          <div class="alert alert-success rounded-4 mb-0">
+            Pickup verified on <strong><%= @claim.pickup_verified_at.strftime("%d %b %Y, %I:%M %p") %></strong>.
+          </div>
+        <% elsif @claim.status == "rejected" && @claim.rejection_reason.present? %>
+          <div class="alert alert-danger rounded-4 mb-0">
+            Rejected because: <strong><%= @claim.rejection_reason %></strong>
+          </div>
+        <% end %>
       </div>
     </div>
   </div>

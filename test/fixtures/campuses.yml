@@ -1,0 +1,11 @@
+main:
+  name: Main Campus
+  code: main
+  location: Central City
+  active: true
+
+north:
+  name: North Campus
+  code: north
+  location: North City
+  active: true

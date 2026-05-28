@@ -1,0 +1,47 @@
+<div class="table-responsive">
+  <table class="table align-middle mb-0">
+    <thead>
+      <tr>
+        <th>Preview</th>
+        <th>Type</th>
+        <th>Title</th>
+        <th>Category</th>
+        <th>Campus</th>
+        <th>Location</th>
+        <th>Date</th>
+        <th>Posted By</th>
+        <th class="text-end">Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% items.each do |item| %>
+        <tr>
+          <td>
+            <%= image_tag item_preview_source(item), class: "thumb-sm border" %>
+          </td>
+          <td>
+            <% if item.item_type == "lost" %>
+              <span class="badge badge-soft-danger">Lost</span>
+            <% else %>
+              <span class="badge badge-soft-success">Found</span>
+            <% end %>
+          </td>
+          <td class="fw-semibold"><%= item.title %></td>
+          <td class="text-muted"><%= item.category %></td>
+          <td class="text-muted"><%= item.campus&.name %></td>
+          <td class="text-muted"><%= item.location %></td>
+          <td class="text-muted"><%= item.found_on %></td>
+          <td class="text-muted"><%= item.user&.email %></td>
+          <td class="text-end">
+            <div class="d-inline-flex gap-2">
+              <% if item_recovery_candidate?(item) && item.user != current_user %>
+                <%= link_to "I Found This", new_item_path(type: "found", reference_item_id: item.id), class: "btn btn-sm btn-outline-dark" %>
+              <% end %>
+              <%= link_to "View", item_path(item), class: "btn btn-sm btn-dark" %>
+            </div>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

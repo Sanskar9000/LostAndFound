@@ -1,0 +1,80 @@
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <div>
+    <h4 class="fw-bold mb-0">Pickup Verification</h4>
+    <div class="text-muted small">
+      Claim for: <span class="fw-semibold"><%= @claim.item&.title %></span>
+    </div>
+  </div>
+  <%= link_to "Back To Claim Review", staff_claim_path(@claim), class: "btn btn-sm btn-outline-secondary" %>
+</div>
+
+<div class="row g-3">
+  <div class="col-lg-7">
+    <div class="card card-soft">
+      <div class="card-body p-4">
+        <div class="d-flex justify-content-between align-items-start gap-3">
+          <div>
+            <div class="text-muted small">Claimant</div>
+            <div class="fw-bold"><%= @claim.user&.email %></div>
+            <div class="small text-muted mt-1">Claim Code: <%= @claim.claim_code.presence || "-" %></div>
+          </div>
+          <span class="badge <%= @claim.pickup_verified? ? "badge-soft-success" : "badge-soft-primary" %> px-3 py-2">
+            <%= @claim.pickup_verified? ? "Pickup Verified" : "Awaiting Verification" %>
+          </span>
+        </div>
+
+        <hr>
+
+        <div class="row g-3">
+          <div class="col-md-6">
+            <div class="text-muted small">Item</div>
+            <div class="fw-semibold"><%= @claim.item&.title %></div>
+          </div>
+          <div class="col-md-6">
+            <div class="text-muted small">Category</div>
+            <div class="fw-semibold"><%= @claim.item&.category %></div>
+          </div>
+          <div class="col-md-6">
+            <div class="text-muted small">Location</div>
+            <div class="fw-semibold"><%= @claim.item&.location %></div>
+          </div>
+          <div class="col-md-6">
+            <div class="text-muted small">Status</div>
+            <div class="fw-semibold"><%= @claim.status.to_s.capitalize %></div>
+          </div>
+        </div>
+
+        <% if @claim.pickup_verified? %>
+          <hr>
+          <div class="alert alert-success rounded-4 mb-0">
+            Pickup verified on <strong><%= @claim.pickup_verified_at.strftime("%d %b %Y, %I:%M %p") %></strong>.
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-5">
+    <div class="card card-soft">
+      <div class="card-body p-4">
+        <h6 class="fw-bold mb-2">Verify Pickup</h6>
+        <div class="small text-muted">
+          This page was opened from the claimant QR code. Confirm the claimant is present before completing pickup.
+        </div>
+
+        <% unless @claim.pickup_verified? %>
+          <hr>
+          <%= form_with url: complete_pickup_verification_path(@claim.pickup_token), method: :patch, local: true do %>
+            <div class="d-grid">
+              <%= submit_tag "Confirm Pickup", class: "btn btn-dark btn-lg rounded-3" %>
+            </div>
+          <% end %>
+
+          <div class="small text-muted mt-3">
+            Successful verification will mark the item as returned and this QR code cannot be used again.
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

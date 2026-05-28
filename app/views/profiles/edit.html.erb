@@ -1,0 +1,81 @@
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <div>
+    <h4 class="fw-bold mb-0">Edit Profile</h4>
+    <div class="text-muted small">Update your campus, department, and profile image.</div>
+  </div>
+
+  <%= link_to "Back to Profile", profile_path, class: "btn btn-outline-secondary" %>
+</div>
+
+<div class="row g-3">
+  <div class="col-lg-4">
+    <div class="card card-soft">
+      <div class="card-body p-4 text-center">
+        <%= image_tag profile_image_source(@user), class: "avatar-lg border border-light-subtle mb-3 shadow-sm" %>
+        <div class="fw-semibold"><%= @user.email %></div>
+        <div class="text-muted small"><%= @user.role.capitalize %></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-8">
+    <div class="card card-soft">
+      <div class="card-body p-4">
+        <%= form_with model: @user, url: profile_path, method: :patch, local: true do |f| %>
+          <% if @user.errors.any? %>
+            <div class="alert alert-danger">
+              <div class="fw-bold mb-2">Please fix the following:</div>
+              <ul class="mb-0">
+                <% @user.errors.full_messages.each do |m| %>
+                  <li><%= m %></li>
+                <% end %>
+              </ul>
+            </div>
+          <% end %>
+
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Email</label>
+              <input type="text" class="form-control" value="<%= @user.email %>" disabled>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Role</label>
+              <input type="text" class="form-control" value="<%= @user.role.capitalize %>" disabled>
+            </div>
+
+            <div class="col-md-6">
+              <%= f.label :campus_id, "Campus", class: "form-label fw-semibold" %>
+              <%= f.collection_select :campus_id, @campuses, :id, :name, {}, class: "form-select" %>
+            </div>
+
+            <div class="col-md-6">
+              <%= f.label :department, "Department", class: "form-label fw-semibold" %>
+              <%= f.select :department, @departments, { prompt: "Select department" }, class: "form-select" %>
+            </div>
+
+            <div class="col-12">
+              <%= f.label :profile_image, "Profile Picture", class: "form-label fw-semibold" %>
+              <%= f.file_field :profile_image, class: "form-control", accept: "image/*" %>
+              <div class="form-text">Upload a square or portrait image for the best result.</div>
+            </div>
+
+            <% if @user.profile_image.attached? %>
+              <div class="col-12">
+                <div class="form-check">
+                  <%= check_box_tag :remove_profile_image, "1", false, class: "form-check-input" %>
+                  <%= label_tag :remove_profile_image, "Remove current profile picture", class: "form-check-label" %>
+                </div>
+              </div>
+            <% end %>
+          </div>
+
+          <div class="d-flex gap-2 mt-4">
+            <%= f.submit "Save Changes", class: "btn btn-dark" %>
+            <%= link_to "Cancel", profile_path, class: "btn btn-outline-secondary" %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

@@ -6,9 +6,20 @@
     </div>
   </div>
 
-  <% if @item.user == current_user || current_user.admin? %>
-    <%= link_to "Edit", edit_item_path(@item), class: "btn btn-sm btn-outline-dark" %>
-  <% end %>
+  <div class="d-flex gap-2">
+    <% if @item.user != current_user %>
+      <%= button_to item_conversation_path(@item), method: :post, class: "btn btn-dark d-inline-flex align-items-center gap-2 px-3 py-2" do %>
+        <i class="bi bi-chat-dots-fill"></i>
+        <span>Chat With Them</span>
+      <% end %>
+    <% elsif @item.item_conversations.exists? %>
+      <%= link_to "View Chats", conversations_path(item_id: @item.id), class: "btn btn-sm btn-dark" %>
+    <% end %>
+
+    <% if @item.user == current_user || current_user.admin? %>
+      <%= link_to "Edit", edit_item_path(@item), class: "btn btn-sm btn-outline-dark" %>
+    <% end %>
+  </div>
 </div>
 
 <div class="row g-3">
@@ -30,6 +41,10 @@
           <div class="col-md-6">
             <div class="text-muted small">Category</div>
             <div class="fw-semibold"><%= @item.category %></div>
+          </div>
+          <div class="col-md-6">
+            <div class="text-muted small">Campus</div>
+            <div class="fw-semibold"><%= @item.campus&.name %></div>
           </div>
           <div class="col-md-6">
             <div class="text-muted small">Location</div>
@@ -55,7 +70,7 @@
           <div class="text-muted small mb-2">Images</div>
           <div class="d-flex flex-wrap gap-2">
             <% @item.images.each do |img| %>
-              <%= image_tag img, class: "rounded-3 border", style: "width: 110px; height: 110px; object-fit: cover;" %>
+              <%= image_tag img, class: "thumb-md border" %>
             <% end %>
           </div>
         <% end %>
@@ -64,6 +79,33 @@
   </div>
 
   <div class="col-lg-4">
+    <% if item_recovery_candidate?(@item) && @item.user == current_user %>
+      <div class="card card-soft mb-3">
+        <div class="card-body p-4">
+          <h6 class="fw-bold mb-1">Recovered Your Item?</h6>
+          <div class="small text-muted mb-3">
+            If you found this item or got it back from someone else, mark it as recovered so it no longer appears as open.
+          </div>
+          <div class="d-grid gap-2">
+            <div class='d-flex justify-content-center'>
+              <%= button_to "I Found The Item / Got It Back", mark_recovered_item_path(@item), method: :patch, class: "btn btn-dark" %>
+            </div>
+            <%= link_to "Review Details First", edit_item_path(@item), class: "btn btn-outline-secondary" %>
+          </div>
+        </div>
+      </div>
+    <% elsif item_recovery_candidate?(@item) && @item.user != current_user %>
+      <div class="card card-soft mb-3">
+        <div class="card-body p-4">
+          <h6 class="fw-bold mb-1">Found This Lost Item?</h6>
+          <div class="small text-muted mb-3">
+            You can post it directly as a found item so the owner can reconnect with it faster.
+          </div>
+          <%= link_to "I Found This Item", new_item_path(type: "found", reference_item_id: @item.id), class: "btn btn-dark w-100" %>
+        </div>
+      </div>
+    <% end %>
+
     <% approved_claim = @item.claims.find { |c| c.status == "approved" } %>
     <% pending_claim  = @item.claims.find { |c| c.status == "pending" } %>
 

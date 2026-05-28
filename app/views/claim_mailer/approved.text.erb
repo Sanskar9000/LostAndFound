@@ -1,0 +1,6 @@
+Hello <%= @claim.user.email %>,
+
+Your claim for <%= @item&.title %> has been approved.
+
+Open your claim details to view your pickup QR code and token:
+<%= claim_url(@claim) %>

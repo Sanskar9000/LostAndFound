@@ -1,0 +1,32 @@
+<div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+  <div>
+    <h4 class="fw-bold mb-0">Notifications</h4>
+    <div class="text-muted small">View your recent app activity and alerts.</div>
+  </div>
+  <div class="d-flex gap-2">
+    <% if current_user.admin? || current_user.faculty? %>
+      <%= link_to "New Notification", new_notification_path, class: "btn btn-outline-dark" %>
+    <% end %>
+    <% if current_user.notifications.unread.exists? %>
+      <%= button_to "Mark All Read", mark_all_read_notifications_path, method: :patch, class: "btn btn-dark" %>
+    <% end %>
+  </div>
+</div>
+
+<div class="view-toggle d-flex flex-wrap gap-2 mb-3">
+  <% { "All" => "all", "Normal" => "activity", "Faculty" => "faculty", "Messages" => "messages" }.each do |label, value| %>
+    <%= link_to label, notifications_path(filter: value), class: "btn #{value == @current_filter ? 'btn-dark active' : 'btn-outline-dark'}" %>
+  <% end %>
+</div>
+
+<div id="notificationsList">
+  <% if @notifications.any? %>
+    <%= render @notifications %>
+  <% else %>
+    <div class="card card-soft">
+      <div class="card-body p-4 text-muted">
+        No notifications yet.
+      </div>
+    </div>
+  <% end %>
+</div>

@@ -1,0 +1,25 @@
+<div class="card card-soft mb-3 <%= 'border border-warning-subtle' if notification.unread? %>" id="notification_<%= notification.id %>">
+  <div class="card-body p-4">
+    <div class="d-flex justify-content-between gap-3 align-items-start">
+      <div class="flex-grow-1">
+        <div class="d-flex align-items-center gap-2 mb-2">
+          <span class="badge badge-soft-primary"><%= notification.kind.to_s.humanize %></span>
+          <% if notification.unread? %>
+            <span class="badge badge-soft-danger">Unread</span>
+          <% end %>
+        </div>
+        <div class="fw-bold mb-1"><%= notification.title %></div>
+        <div class="text-muted mb-2"><%= notification.body %></div>
+        <div class="small text-muted"><%= notification.created_at_label %></div>
+      </div>
+      <div class="d-flex gap-2">
+        <% if notification.link_path.present? %>
+          <%= link_to "Open", notification.link_path, class: "btn btn-sm btn-outline-dark" %>
+        <% end %>
+        <% if notification.unread? %>
+          <%= button_to "Mark Read", notification_path(notification), method: :patch, class: "btn btn-sm btn-dark" %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

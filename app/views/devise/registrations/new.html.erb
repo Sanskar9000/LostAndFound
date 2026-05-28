@@ -15,6 +15,17 @@
           </div>
 
           <div class="col-12">
+            <%= f.label :campus_id, "Campus", class: "form-label fw-semibold" %>
+            <%= f.collection_select :campus_id,
+              Campus.active.order(:name),
+              :id,
+              :name,
+              { prompt: "Select campus" },
+              class: "form-select form-select-lg rounded-3",
+              required: true %>
+          </div>
+
+          <div class="col-12">
             <%= f.label :department, "Department", class: "form-label fw-semibold" %>
             <%= f.select :department,
               ["Computer Science", "IT", "Mechanical", "Civil", "Electrical", "Electronics", "Other"],

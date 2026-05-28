@@ -1,0 +1,74 @@
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <div>
+    <h4 class="fw-bold mb-0">My Profile</h4>
+    <div class="text-muted small">View your account details and campus information.</div>
+  </div>
+
+  <%= link_to "Edit Profile", edit_profile_path, class: "btn btn-dark" %>
+</div>
+
+<div class="row g-3">
+  <div class="col-lg-4">
+    <div class="card card-soft">
+      <div class="card-body p-4 text-center">
+        <%= image_tag profile_image_source(@user), class: "avatar-lg border border-light-subtle mb-3 shadow-sm" %>
+        <h5 class="fw-bold mb-1"><%= @user.email %></h5>
+        <div class="text-muted"><%= @user.role.capitalize %></div>
+        <div class="text-muted small"><%= @user.campus&.name %></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-8">
+    <div class="card card-soft">
+      <div class="card-body p-4">
+        <div class="row g-3">
+          <div class="col-md-6">
+            <div class="text-muted small">Email</div>
+            <div class="fw-semibold"><%= @user.email %></div>
+          </div>
+          <div class="col-md-6">
+            <div class="text-muted small">Role</div>
+            <div class="fw-semibold"><%= @user.role.capitalize %></div>
+          </div>
+          <div class="col-md-6">
+            <div class="text-muted small">Campus</div>
+            <div class="fw-semibold"><%= @user.campus&.name %></div>
+          </div>
+          <div class="col-md-6">
+            <div class="text-muted small">Department</div>
+            <div class="fw-semibold"><%= @user.department %></div>
+          </div>
+          <div class="col-md-6">
+            <div class="text-muted small">Verification</div>
+            <div class="fw-semibold"><%= @user.verified? ? "Verified" : "Pending" %></div>
+          </div>
+          <div class="col-md-6">
+            <div class="text-muted small">Joined</div>
+            <div class="fw-semibold"><%= @user.created_at.strftime("%d %b %Y") %></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row g-3 mt-1">
+      <div class="col-md-6">
+        <div class="card card-soft">
+          <div class="card-body p-4">
+            <div class="text-muted small">Items Posted</div>
+            <div class="display-6 fw-bold"><%= @user.items.count %></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="card card-soft">
+          <div class="card-body p-4">
+            <div class="text-muted small">Claims Submitted</div>
+            <div class="display-6 fw-bold"><%= @user.claims.count %></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

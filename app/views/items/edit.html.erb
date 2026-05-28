@@ -5,4 +5,30 @@
   </div>
 </div>
 
+<% if @item.item_type == "lost" %>
+  <div class="card card-soft mb-3">
+    <div class="card-body p-4">
+      <% if @item.status == "open" %>
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+          <div>
+            <div class="fw-semibold mb-1">Got your lost item back?</div>
+            <div class="text-muted small">
+              Mark it as recovered so it moves out of the open lost-items flow. This action is meant for the person who created the lost post.
+            </div>
+          </div>
+          <%= button_to "I Found The Item / Got It Back",
+            mark_recovered_item_path(@item),
+            method: :patch,
+            class: "btn btn-dark" %>
+        </div>
+      <% else %>
+        <div class="fw-semibold mb-1">This lost item is already marked as recovered.</div>
+        <div class="text-muted small">
+          Recovery status has already been saved, so this action is no longer available.
+        </div>
+      <% end %>
+    </div>
+  </div>
+<% end %>
+
 <%= render "form", item: @item %>

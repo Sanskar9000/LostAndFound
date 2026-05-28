@@ -3,13 +3,13 @@
 one:
   item: one
   user: one
-  status: MyString
-  proof_note: MyText
-  claim_code: MyString
+  status: pending
+  proof_note: Lost it near the library front desk
+  claim_code: CLM-AAA111
 
 two:
   item: two
   user: two
-  status: MyString
-  proof_note: MyText
-  claim_code: MyString
+  status: approved
+  proof_note: The card belongs to me and has my photo
+  claim_code: CLM-BBB222

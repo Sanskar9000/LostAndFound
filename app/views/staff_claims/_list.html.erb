@@ -1,0 +1,42 @@
+<div class="table-responsive">
+  <table class="table align-middle mb-0">
+    <thead>
+      <tr>
+        <th>Preview</th>
+        <th>Item</th>
+        <th>Status</th>
+        <th>Requested By</th>
+        <th>Requested On</th>
+        <th>Proof Note</th>
+        <th class="text-end">Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% claims.each do |claim| %>
+        <tr>
+          <td>
+            <%= image_tag claim_preview_source(claim), class: "thumb-sm border" %>
+          </td>
+          <td class="fw-semibold"><%= claim.item&.title %></td>
+          <td>
+            <span class="badge <%= claim.pickup_verified? ? 'badge-soft-success' : claim.status == 'approved' ? 'badge-soft-success' : 'badge-soft-primary' %>">
+              <%= claim.pickup_verified? ? "Picked Up" : claim.status.to_s.capitalize %>
+            </span>
+          </td>
+          <td class="text-muted"><%= claim.user&.email %></td>
+          <td class="text-muted"><%= claim.created_at.strftime("%d %b %Y, %I:%M %p") %></td>
+          <td class="text-muted"><%= truncate(claim.proof_note.to_s, length: 50) %></td>
+          <td class="text-end">
+            <div class="d-inline-flex align-items-center gap-1">
+              <%= button_to "View", staff_claim_path(claim), method: :get, class: "btn btn-sm btn-dark", form_class: "d-inline" %>
+              <% if claim.status == "pending" %>
+                <%= button_to "Approve", approve_staff_claim_path(claim), method: :put, class: "btn btn-sm btn-success", form_class: "d-inline" %>
+                <%= button_to "Reject", reject_staff_claim_path(claim), method: :put, class: "btn btn-sm btn-outline-danger", form_class: "d-inline" %>
+              <% end %>
+            </div>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

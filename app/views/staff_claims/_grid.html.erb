@@ -1,0 +1,40 @@
+<div class="row g-3">
+  <% claims.each do |claim| %>
+    <div class="col-sm-6 col-xl-4">
+      <div class="card card-soft h-100 overflow-hidden">
+        <%= image_tag claim_preview_source(claim), class: "card-preview border-bottom" %>
+        <div class="card-body p-4 d-flex flex-column">
+          <div class="d-flex justify-content-between align-items-start gap-2 mb-3">
+            <h6 class="fw-bold mb-0"><%= claim.item&.title %></h6>
+            <span class="badge <%= claim.pickup_verified? ? 'badge-soft-success' : claim.status == 'approved' ? 'badge-soft-success' : 'badge-soft-primary' %>">
+              <%= claim.pickup_verified? ? "Picked Up" : claim.status.to_s.capitalize %>
+            </span>
+          </div>
+
+          <div class="small text-muted mb-1">Requested by: <span class="text-muted fw-semibold"><%= claim.user&.email %></span></div>
+          <div class="small text-muted mb-3">Requested on: <span class="text-muted fw-semibold"><%= claim.created_at.strftime("%d %b %Y, %I:%M %p") %></span></div>
+
+          <div class="text-muted small mb-3"><%= truncate(claim.proof_note.to_s, length: 100) %></div>
+
+          <div class="mt-auto d-grid gap-2">
+            <%= link_to "View", staff_claim_path(claim), class: "btn btn-sm btn-dark" %>
+            <% if claim.status == "pending" %>
+              <div class="d-flex gap-2">
+                <%= button_to "Approve", approve_staff_claim_path(claim), method: :put, class: "btn btn-sm btn-success w-100" %>
+                <%= button_to "Reject", reject_staff_claim_path(claim), method: :put, class: "btn btn-sm btn-outline-danger w-100" %>
+              </div>
+            <% elsif claim.status == "approved" && !claim.pickup_verified? %>
+              <div class="small text-muted">
+                Awaiting pickup verification. Open the claim to verify the QR code or token.
+              </div>
+            <% else %>
+              <div class="small text-muted">
+                Pickup already verified.
+              </div>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% end %>
+</div>

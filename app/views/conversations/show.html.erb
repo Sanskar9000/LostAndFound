@@ -1,0 +1,48 @@
+<div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+  <div>
+    <h4 class="fw-bold mb-0"><%= @conversation.item.title %></h4>
+    <div class="text-muted small">
+      Chat with <%= @conversation.other_participant(current_user).email %> about this item
+    </div>
+  </div>
+  <div class="d-flex gap-2">
+    <%= link_to "View Item", item_path(@conversation.item), class: "btn btn-outline-dark" %>
+    <%= link_to "All Chats", conversations_path, class: "btn btn-outline-dark" %>
+  </div>
+</div>
+
+<div
+  class="card card-soft"
+  data-controller="conversation"
+  data-conversation-conversation-id-value="<%= @conversation.id %>"
+  data-conversation-current-user-id-value="<%= current_user.id %>"
+>
+  <div class="card-body p-0">
+    <div
+      id="conversationMessages"
+      data-conversation-target="messages"
+      class="p-4"
+      style="min-height: 420px; max-height: 62vh; overflow-y: auto;"
+    >
+      <%= render @messages, current_user: current_user %>
+    </div>
+
+    <div class="border-top p-3">
+      <% if @message.errors.any? %>
+        <div class="alert alert-danger mb-3">
+          <%= @message.errors.full_messages.to_sentence %>
+        </div>
+      <% end %>
+
+      <%= form_with url: conversation_messages_path(@conversation), scope: :message, data: { conversation_target: "form", action: "turbo:submit-end->conversation#handleSubmitEnd" } do |f| %>
+        <div class="d-flex gap-2 align-items-end">
+          <div class="flex-grow-1">
+            <%= f.label :body, "Message", class: "form-label small text-muted mb-1" %>
+            <%= f.text_area :body, rows: 3, class: "form-control", placeholder: "Type your message here...", data: { conversation_target: "input", action: "keydown->conversation#submitOnEnter" } %>
+          </div>
+          <%= f.submit "Send", class: "btn btn-dark" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

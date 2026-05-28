@@ -1,0 +1,30 @@
+<div class="mb-3">
+  <h4 class="fw-bold mb-0">Send Notification</h4>
+  <div class="text-muted small">Create a manual in-app announcement for students or faculty.</div>
+</div>
+
+<div class="card card-soft">
+  <div class="card-body p-4">
+    <%= form_with url: notifications_path, scope: :notification, local: true do |f| %>
+      <div class="mb-3">
+        <%= f.label :audience, class: "form-label fw-semibold" %>
+        <%= f.select :audience, [["Students", "students"], ["Faculty", "faculty"]], {}, class: "form-select" %>
+      </div>
+
+      <div class="mb-3">
+        <%= f.label :title, class: "form-label fw-semibold" %>
+        <%= f.text_field :title, class: "form-control", placeholder: "e.g., Lost & Found gathering today at 4 PM" %>
+      </div>
+
+      <div class="mb-3">
+        <%= f.label :body, class: "form-label fw-semibold" %>
+        <%= f.text_area :body, rows: 5, class: "form-control", placeholder: "Write the full notification message..." %>
+      </div>
+
+      <div class="d-flex gap-2">
+        <%= f.submit "Send Notification", class: "btn btn-dark" %>
+        <%= link_to "Cancel", notifications_path, class: "btn btn-outline-dark" %>
+      </div>
+    <% end %>
+  </div>
+</div>

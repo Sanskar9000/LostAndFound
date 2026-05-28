@@ -5,4 +5,68 @@
   </div>
 </div>
 
+<% if @reference_item.present? && @item.item_type == "found" %>
+  <div class="card card-soft mb-3">
+    <div class="card-body p-4">
+      <div class="d-flex justify-content-between align-items-start gap-3">
+        <div>
+          <div class="fw-semibold mb-1">You are posting this as a found item for an existing lost report</div>
+          <div class="text-muted small">
+            We prefilled some details from <strong><%= @reference_item.title %></strong> so you can help return it faster.
+          </div>
+        </div>
+        <%= link_to "View Lost Post", item_path(@reference_item), class: "btn btn-sm btn-outline-dark" %>
+      </div>
+    </div>
+  </div>
+<% end %>
+
 <%= render "form", item: @item %>
+
+<% if @item.item_type.in?(%w[lost found]) %>
+  <div class="modal fade" id="itemChecklistModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content border-0 rounded-4 shadow-lg">
+        <div class="modal-body p-4 p-md-5">
+          <% if @item.item_type == "lost" %>
+            <div class="small text-uppercase text-muted fw-semibold mb-2" style="letter-spacing: .08em;">Before You Post</div>
+            <h4 class="fw-bold mb-2">Have you checked the found items list first?</h4>
+            <p class="text-muted mb-4">
+              Someone may have already reported your item as found. Checking first can help you recover it faster.
+            </p>
+            <div class="d-grid gap-2">
+              <%= link_to "Check Found Items",
+                items_path(item_type: "found", status: "open"),
+                class: "btn btn-dark btn-lg rounded-3" %>
+              <button type="button" class="btn btn-outline-secondary btn-lg rounded-3" data-bs-dismiss="modal">Continue Posting Lost Item</button>
+            </div>
+          <% else %>
+            <div class="small text-uppercase text-muted fw-semibold mb-2" style="letter-spacing: .08em;">Before You Post</div>
+            <h4 class="fw-bold mb-2">Have you checked the lost items list first?</h4>
+            <p class="text-muted mb-4">
+              If someone already reported this item as lost, you may be able to return it directly or ask them to claim it.
+            </p>
+            <div class="d-grid gap-2">
+              <%= link_to "Check Lost Items",
+                items_path(item_type: "lost", status: "open"),
+                class: "btn btn-dark btn-lg rounded-3" %>
+              <button type="button" class="btn btn-outline-secondary btn-lg rounded-3" data-bs-dismiss="modal">Continue Posting Found Item</button>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener("turbo:load", function () {
+      const modalEl = document.getElementById("itemChecklistModal");
+      if (!modalEl || typeof bootstrap === "undefined") return;
+      if (modalEl.dataset.shown === "true") return;
+
+      modalEl.dataset.shown = "true";
+      const modal = new bootstrap.Modal(modalEl);
+      modal.show();
+    });
+  </script>
+<% end %>

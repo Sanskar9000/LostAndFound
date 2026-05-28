@@ -1,0 +1,161 @@
+<div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-3">
+  <div>
+    <h4 class="fw-bold mb-0">Analytics</h4>
+    <div class="text-muted small">
+      Overview for <%= @range_label.downcase %> (<%= @date_range.begin.strftime("%d %b %Y") %> to <%= @date_range.end.strftime("%d %b %Y") %>)
+    </div>
+  </div>
+
+  <div class="d-flex gap-2 flex-wrap">
+    <% { "Today" => "today", "Week" => "week", "Month" => "month", "Year" => "year" }.each do |label, value| %>
+      <%= link_to label, analytics_path(range: value), class: "btn #{value == @range ? 'btn-dark' : 'btn-outline-dark'}" %>
+    <% end %>
+  </div>
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-lg-3 col-sm-6">
+    <div class="card card-soft stat-card p-4 h-100">
+      <div class="small text-muted">Items Reported</div>
+      <div class="display-6 fw-bold mt-2"><%= @kpis[:total_items] %></div>
+      <div class="small text-muted mt-2"><%= @kpis[:lost_items] %> lost, <%= @kpis[:found_items] %> found</div>
+    </div>
+  </div>
+  <div class="col-lg-3 col-sm-6">
+    <div class="card card-soft stat-card p-4 h-100">
+      <div class="small text-muted">Claims Submitted</div>
+      <div class="display-6 fw-bold mt-2"><%= @kpis[:total_claims] %></div>
+      <div class="small text-muted mt-2"><%= @kpis[:pending_claims] %> pending, <%= @kpis[:approved_claims] %> approved</div>
+    </div>
+  </div>
+  <div class="col-lg-3 col-sm-6">
+    <div class="card card-soft stat-card p-4 h-100">
+      <div class="small text-muted">Rejected Claims</div>
+      <div class="display-6 fw-bold mt-2"><%= @kpis[:rejected_claims] %></div>
+      <div class="small text-muted mt-2">Reason-tracked rejections in this range</div>
+    </div>
+  </div>
+  <div class="col-lg-3 col-sm-6">
+    <div class="card card-soft stat-card p-4 h-100">
+      <div class="small text-muted">Students Joined</div>
+      <div class="display-6 fw-bold mt-2"><%= @kpis[:total_students] %></div>
+      <div class="small text-muted mt-2"><%= @kpis[:returned_items] %> items returned</div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-3">
+  <div class="col-xl-4">
+    <div class="card card-soft h-100">
+      <div class="card-body p-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <div>
+            <h5 class="fw-bold mb-0">Items</h5>
+            <div class="small text-muted"><%= @items_scope.size %> in range</div>
+          </div>
+          <%= link_to "Export CSV", analytics_path(range: @range, dataset: "items", format: :csv), class: "btn btn-sm btn-outline-dark" %>
+        </div>
+
+        <div class="table-responsive">
+          <table class="table align-middle mb-0">
+            <thead>
+              <tr>
+                <th>Title</th>
+                <th>Status</th>
+                <th>Campus</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @items_scope.limit(8).each do |item| %>
+                <tr>
+                  <td>
+                    <div class="fw-semibold"><%= item.title %></div>
+                    <div class="small text-muted"><%= item.item_type.capitalize %> • <%= item.created_at.strftime("%d %b") %></div>
+                  </td>
+                  <td><%= item.status.capitalize %></td>
+                  <td><%= item.campus&.name %></td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-xl-4">
+    <div class="card card-soft h-100">
+      <div class="card-body p-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <div>
+            <h5 class="fw-bold mb-0">Claims</h5>
+            <div class="small text-muted"><%= @claims_scope.size %> in range</div>
+          </div>
+          <%= link_to "Export CSV", analytics_path(range: @range, dataset: "claims", format: :csv), class: "btn btn-sm btn-outline-dark" %>
+        </div>
+
+        <div class="table-responsive">
+          <table class="table align-middle mb-0">
+            <thead>
+              <tr>
+                <th>Claim</th>
+                <th>Status</th>
+                <th>Campus</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @claims_scope.limit(8).each do |claim| %>
+                <tr>
+                  <td>
+                    <div class="fw-semibold"><%= claim.claim_code %></div>
+                    <div class="small text-muted"><%= claim.item&.title %></div>
+                  </td>
+                  <td><%= claim.status.capitalize %></td>
+                  <td><%= claim.item&.campus&.name %></td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-xl-4">
+    <div class="card card-soft h-100">
+      <div class="card-body p-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <div>
+            <h5 class="fw-bold mb-0">Students</h5>
+            <div class="small text-muted"><%= @students_scope.size %> in range</div>
+          </div>
+          <%= link_to "Export CSV", analytics_path(range: @range, dataset: "students", format: :csv), class: "btn btn-sm btn-outline-dark" %>
+        </div>
+
+        <div class="table-responsive">
+          <table class="table align-middle mb-0">
+            <thead>
+              <tr>
+                <th>Email</th>
+                <th>Campus</th>
+                <th>Joined</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @students_scope.limit(8).each do |student| %>
+                <tr>
+                  <td>
+                    <div class="fw-semibold"><%= student.email %></div>
+                    <div class="small text-muted"><%= student.department %></div>
+                  </td>
+                  <td><%= student.campus&.name %></td>
+                  <td><%= student.created_at.strftime("%d %b %Y") %></td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
