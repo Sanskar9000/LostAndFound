@@ -250,6 +250,37 @@
         border-radius: 999px;
         object-fit: cover;
       }
+      .image-expand-trigger {
+        appearance: none;
+        background: transparent;
+        border: 0;
+        padding: 0;
+        line-height: 0;
+        border-radius: inherit;
+        cursor: zoom-in;
+      }
+      .image-expand-trigger img {
+        transition: transform .18s ease, box-shadow .18s ease;
+      }
+      .image-expand-trigger:hover img {
+        transform: translateY(-1px) scale(1.01);
+        box-shadow: 0 12px 24px rgba(15,23,42,.12);
+      }
+      .image-preview-modal .modal-content {
+        background: rgba(15,23,42,.96);
+        border: 1px solid rgba(255,255,255,.08);
+        border-radius: 24px;
+      }
+      .image-preview-modal .btn-close {
+        filter: invert(1);
+      }
+      .image-preview-modal img {
+        max-height: 78vh;
+        width: 100%;
+        object-fit: contain;
+        border-radius: 18px;
+        background: rgba(255,255,255,.03);
+      }
 
       .btn {
         border-radius: 14px;
@@ -570,6 +601,8 @@
 
   <body data-authenticated="<%= user_signed_in? %>">
     <script>
+      let imagePreviewModal = null;
+
       function setSidebarState(collapsed) {
         document.body.classList.toggle("sidebar-collapsed", collapsed);
         try { localStorage.setItem("lf_sidebar_collapsed", collapsed ? "1" : "0"); } catch (e) {}
@@ -596,7 +629,7 @@
           if (stored === "dark" || stored === "light") {
             setTheme(stored);
           } else {
-            setTheme(window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+            setTheme("light");
           }
         } catch (e) {}
       }
@@ -619,10 +652,50 @@
         bd.classList.toggle("show");
       }
 
-      document.addEventListener("DOMContentLoaded", function() {
+      function initImagePreviewModal() {
+        const modalElement = document.getElementById("imagePreviewModal");
+        if (!modalElement || !window.bootstrap) return null;
+
+        imagePreviewModal = imagePreviewModal || new window.bootstrap.Modal(modalElement);
+        return imagePreviewModal;
+      }
+
+      function openImagePreview(source, altText) {
+        const modal = initImagePreviewModal();
+        const image = document.getElementById("imagePreviewModalImage");
+        const caption = document.getElementById("imagePreviewModalCaption");
+        if (!modal || !image) return;
+
+        image.src = source;
+        image.alt = altText || "Expanded image";
+
+        if (caption) {
+          caption.textContent = altText || "";
+          caption.classList.toggle("d-none", !altText);
+        }
+
+        modal.show();
+      }
+
+      function handleExpandableImageClick(event) {
+        const trigger = event.target.closest("[data-expandable-image]");
+        if (!trigger) return;
+
+        event.preventDefault();
+        openImagePreview(trigger.dataset.imageSrc, trigger.dataset.imageAlt);
+      }
+
+      function initShellState() {
         initThemeState();
         initSidebarState();
-      });
+      }
+
+      if (!window.__lfShellBindingsAttached) {
+        document.addEventListener("click", handleExpandableImageClick);
+        document.addEventListener("DOMContentLoaded", initShellState);
+        document.addEventListener("turbo:load", initShellState);
+        window.__lfShellBindingsAttached = true;
+      }
     </script>
 
     <% if user_signed_in? %>
@@ -822,6 +895,20 @@
         <%= yield %>
       </div>
     <% end %>
+
+    <div class="modal fade image-preview-modal" id="imagePreviewModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-xl modal-fullscreen-sm-down">
+        <div class="modal-content">
+          <div class="modal-header border-0 pb-0">
+            <div class="small text-white-50 d-none" id="imagePreviewModalCaption"></div>
+            <button type="button" class="btn-close ms-auto" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body pt-2">
+            <img src="" alt="Expanded image" id="imagePreviewModalImage">
+          </div>
+        </div>
+      </div>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   </body>
